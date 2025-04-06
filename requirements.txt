@@ -1,0 +1,24 @@
+# PDF Processing
+PyMuPDF==1.23.7
+
+# LangChain Components - phiên bản tương thích
+langchain>=0.1.6
+langchain-community>=0.0.18
+langchain-text-splitters>=0.0.1
+langchain-core>=0.1.12
+
+# Vector Store and Embeddings
+faiss-cpu==1.7.4
+sentence-transformers==2.5.1
+
+# Environment Variables
+python-dotenv==1.0.1
+
+# Interface
+streamlit==1.28.2
+
+# AI Models
+huggingface-hub==0.20.3
+
+# Utility
+pickle-mixin==1.0.2
