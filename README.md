@@ -44,7 +44,7 @@ HUGGINGFACEHUB_API_TOKEN=your_huggingface_token_here
 ## ▶️ Usage
 Run the Streamlit app:
 ```bash
-streamlit run app.py
+streamlit run main.py
 ```
 Once the interface loads in your browser, you can:
 * Upload a PDF document with pet mental health content.
