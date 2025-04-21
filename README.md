@@ -1,19 +1,18 @@
 # Pet Health Assistant Project
 
 ## Overview
-This project creates a veterinary assistant chatbot that helps pet owners with health concerns. It uses web crawling to collect pet health data from petmart.vn (a trusted Vietnamese pet care resource), vector embeddings for semantic search, and large language model integration for intelligent responses.
+This project creates a veterinary assistant chatbot that helps pet owners with health concerns. It uses web crawling to collect pet health data (a trusted Vietnamese pet care resource), vector embeddings for semantic search, and large language model integration for intelligent responses.
 
 <div align="center">
   <img src="static\images\web.png" alt="Pet Health Assistant" width="800"/>
 </div>
 
 ## Features
-- Data collection through web crawling from petmart.vn
+- Data collection through web crawling from web
 - Vietnamese-focused pet health knowledge base
 - Vector database for semantic search
 - AI-powered conversation with veterinary knowledge
-- Bilingual support (Vietnamese and English)
-- Multiple LLM backend options (Groq and OpenRouter)
+- Multiple LLM backend options 
 
 ## System Architecture
 
@@ -40,7 +39,7 @@ This project creates a veterinary assistant chatbot that helps pet owners with h
 ## Project Components
 
 ### 1. Data Collection (`1-extraction.py`)
-- Web crawler that extracts links with class="plain" from petmart.vn
+- Web crawler that extracts 
 - Focuses on the pet health and veterinary sections
 - Stores links in JSON format for further processing
 - Handles pagination and implements rate limiting
@@ -53,7 +52,7 @@ This project creates a veterinary assistant chatbot that helps pet owners with h
 
 ### 3. Vector Database Creation (`3-embedding.py`)
 - Text chunking for better search results
-- Embedding generation using `multilingual-e5-large` model (optimized for Vietnamese language)
+- Embedding generation using `multilingual-e5-large` model 
 - LanceDB integration for efficient vector storage
 - Progress tracking using tqdm
 
@@ -66,7 +65,7 @@ This project creates a veterinary assistant chatbot that helps pet owners with h
 ## Data Flow
 
 1. **Data Collection Phase**:
-   - Web crawler extracts pet health information from petmart.vn
+   - Web crawler extracts pet health information web
    - Content is parsed and cleaned
    - Text is split into manageable chunks
 
