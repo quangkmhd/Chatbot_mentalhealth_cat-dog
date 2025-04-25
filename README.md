@@ -1,7 +1,7 @@
 # 🐾 Pet Health - Pet Healthcare Assistant
 
 <div align="center">
-  <img src="static\images\pet-logo.png" alt="Pet Health Logo" width="300px">
+  <img src="static\images\pet-logo.png" alt="Pet Health Logo" width="200px">
   <p><i>Your intelligent companion for pet care</i></p>
 </div>
 
