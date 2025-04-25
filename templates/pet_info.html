@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block title %}Thông Tin Thú Cưng{% endblock %}
+
+{% block content %}
+<div class="pet-info-container">
+    <div class="pet-info-header">
+        <h1>Thông Tin Thú Cưng</h1>
+        <p>Nhập thông tin về thú cưng của bạn để nhận được tư vấn tốt hơn</p>
+    </div>
+
+    <div class="pet-info-form">
+        <form method="POST" action="{{ url_for('save_pet_info') }}">
+            <div class="form-group">
+                <label for="owner_name">Tên người nuôi:</label>
+                <input type="text" id="owner_name" name="owner_name" value="{{ pet_info.owner_name if pet_info else '' }}" placeholder="Nhập tên của bạn">
+            </div>
+
+            <div class="form-group">
+                <label for="pet_name">Tên thú cưng:</label>
+                <input type="text" id="pet_name" name="pet_name" value="{{ pet_info.pet_name if pet_info else '' }}" placeholder="Nhập tên thú cưng">
+            </div>
+
+            <div class="form-group">
+                <label for="pet_type">Loài:</label>
+                <select id="pet_type" name="pet_type">
+                    <option value="chó" {% if pet_info and pet_info.pet_type == 'chó' %}selected{% endif %}>Chó</option>
+                    <option value="mèo" {% if pet_info and pet_info.pet_type == 'mèo' %}selected{% endif %}>Mèo</option>
+                    <option value="chim" {% if pet_info and pet_info.pet_type == 'chim' %}selected{% endif %}>Chim</option>
+                    <option value="thú cưng khác" {% if pet_info and pet_info.pet_type == 'thú cưng khác' %}selected{% endif %}>Khác</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_breed">Giống:</label>
+                <input type="text" id="pet_breed" name="pet_breed" value="{{ pet_info.pet_breed if pet_info else '' }}" placeholder="Ví dụ: Poodle, Husky, Mèo Ba Tư...">
+            </div>
+
+            <div class="form-group">
+                <label for="pet_age">Tuổi:</label>
+                <input type="text" id="pet_age" name="pet_age" value="{{ pet_info.pet_age if pet_info else '' }}" placeholder="Ví dụ: 2 tuổi, 6 tháng">
+            </div>
+
+            <div class="form-group">
+                <label for="pet_weight">Cân nặng (kg):</label>
+                <input type="text" id="pet_weight" name="pet_weight" value="{{ pet_info.pet_weight if pet_info else '' }}" placeholder="Ví dụ: 5.5">
+            </div>
+
+            <div class="form-group">
+                <label for="pet_gender">Giới tính:</label>
+                <select id="pet_gender" name="pet_gender">
+                    <option value="đực" {% if pet_info and pet_info.pet_gender == 'đực' %}selected{% endif %}>Đực</option>
+                    <option value="cái" {% if pet_info and pet_info.pet_gender == 'cái' %}selected{% endif %}>Cái</option>
+                    <option value="không rõ" {% if pet_info and pet_info.pet_gender == 'không rõ' %}selected{% endif %}>Không rõ</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_health_history">Tiền sử bệnh (nếu có):</label>
+                <textarea id="pet_health_history" name="pet_health_history" placeholder="Nhập tiền sử bệnh hoặc các vấn đề sức khỏe trước đây">{{ pet_info.pet_health_history if pet_info else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_diet">Chế độ ăn:</label>
+                <textarea id="pet_diet" name="pet_diet" placeholder="Mô tả chế độ ăn hiện tại của thú cưng">{{ pet_info.pet_diet if pet_info else '' }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="save-btn">Lưu thông tin</button>
+                <a href="{{ url_for('index') }}" class="cancel-btn">Quay lại Chat</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Nút Xóa thông tin -->
+    <div class="mt-4 text-center">
+        <form action="/clear-pet-info" method="post">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash mr-2"></i> Xóa thông tin đã lưu
+            </button>
+        </form>
+    </div>
+
+    <!-- Thêm một thông báo để người dùng biết thông tin sẽ được lưu tự động -->
+    <div class="alert alert-info mt-3">
+        <i class="fas fa-info-circle mr-2"></i> Thông tin thú cưng sẽ được lưu tự động và khôi phục mỗi khi bạn quay lại trang web.
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Có thể thêm JS validate form ở đây nếu cần
+    });
+</script>
+{% endblock %} 
