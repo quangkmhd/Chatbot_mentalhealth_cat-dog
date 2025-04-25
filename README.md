@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Pet Health Assistant Project
 
 ## Overview
