@@ -72,7 +72,7 @@ Processes text and creates vector embeddings stored in LanceDB.
 
 ```
 Pet Health/
-├── app.py                # Main Flask server
+├── app.py                # Main Flask server and model
 ├── system_prompt.py      # System prompt for LLM
 ├── requirements.txt      # Library requirements
 ├── 1-extraction.py       # Link collection tool
