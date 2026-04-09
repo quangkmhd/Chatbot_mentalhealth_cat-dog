@@ -1,90 +1,66 @@
 # API & Script Reference: PawsitiveMind Chatbot
 
-This document provides documentation for the Python scripts forming the ingestion pipeline and the web API endpoints for the chatbot interface.
+This document provides documentation for the Python scripts forming the ingestion pipeline and the web API endpoints.
 
-## 1. The Offline Data Pipeline
+## 1. Management Scripts (`src/scripts/`)
 
-### `2-crawler.py`
-Scrapes data from mental health resources.
-
-**Execution:**
-```bash
-python 2-crawler.py --urls "https://example.com/cbt-guide" --depth 2
-```
-**Key Functions:**
-- `fetch_page(url)`: Handles HTTP requests with appropriate headers to avoid 403 blocks.
-- `extract_links(html, base_url)`: Discovers child links up to the specified `--depth`.
-
-### `1-extraction.py`
-Processes raw HTML/text dumps into clean, embeddable JSON.
+### `crawl_links.py`
+Scrapes PetMart to discover relevant article links.
 
 **Execution:**
 ```bash
-python 1-extraction.py --input ./raw_data --output plain_links.json
-```
-**Output Format (`plain_links.json`):**
-```json
-[
-  {
-    "id": "doc_001",
-    "title": "Managing Panic Attacks",
-    "text": "A panic attack is a sudden episode of intense fear..."
-  }
-]
+python -m src.scripts.crawl_links
 ```
 
-### `3-embedding.py`
-Creates the LanceDB vector index.
+### `ingest_data.py`
+The master ingestion pipeline.
 
 **Execution:**
 ```bash
-python 3-embedding.py
+python -m src.scripts.ingest_data [--crawl]
 ```
 **Behavior:**
-1. Loads `plain_links.json`.
-2. Splits long texts using LangChain splitters.
-3. Encodes texts via Hugging Face.
-4. Commits data to `./data/lancedb/therapy_docs.lance`.
+1. (Optional) Crawls full article content for the discovered links.
+2. Cleans text and splits it into manageable tokens (512 tokens).
+3. Encodes texts via `intfloat/multilingual-e5-large`.
+4. Stores vectors and metadata in LanceDB (`data/lancedb_clean`).
 
-## 2. Flask Web API (`app.py`)
+## 2. Core Modules (`src/chat_bot/`)
 
-The Flask application serves the static HTML/CSS files and provides an endpoint for chat interaction.
+### `models/vector_db.py`
+Handles all interactions with the LanceDB vector store.
+- `get_embedding(text)`: Returns a 1024-dim vector.
+- `search(query, limit)`: Performs semantic search and returns formatted context.
+- `add_chunks(chunks)`: Adds new data to the index.
 
-### `POST /api/chat`
-The main endpoint that receives user input and returns the LLM response.
+### `core/chat_logic.py`
+Orchestrates the LLM interaction.
+- `ChatManager.get_response(messages, context, model_choice)`: Formats the prompt and calls Groq or OpenRouter.
+- Handles system prompt templates and reasoning strategies (CoT, ReAct).
+
+## 3. Web API (`src/chat_bot/api/app.py`)
+
+The Flask application serves as the primary user interface.
+
+### `POST /chat`
+Receives user input and returns the assistant's response.
 
 **Request Body:**
 ```json
 {
-  "message": "I've been feeling really down today.",
-  "session_id": "usr_98765"
+  "message": "My pet is acting strange.",
+  "history": [{"role": "user", "content": "Hello"}]
 }
 ```
-*Note: `session_id` is used to maintain conversation history in memory.*
 
-**Response (JSON):**
+**Response:**
 ```json
 {
-  "response": "I'm so sorry to hear that you're having a tough day. It's completely valid to feel down sometimes. Based on the cognitive behavioral resources I have, it can sometimes help to... Would you like to talk more about what's making you feel this way?",
-  "sources_used": ["Managing Depression Guide", "CBT Techniques"]
+  "response": "...",
+  "context": "Retrieved data used for this response"
 }
 ```
 
-## 3. Core Chat Logic (`4-chat.py`)
-
-This script can be run standalone as a CLI chatbot or imported as a module by `app.py`.
-
-### `class TherapyBot`
-
-#### `__init__(self, db_path: str = "./data/lancedb")`
-Initializes the LanceDB connection and sets up the LangChain LLM chain using the Groq API client.
-
-#### `retrieve_context(self, query: str, k: int = 3) -> str`
-Embeds the user query and searches the LanceDB table. Returns a concatenated string of the most relevant therapeutic texts.
-
-#### `get_response(self, user_input: str) -> str`
-1. Calls `retrieve_context`.
-2. Formats the `system_prompt.py` with the context and the user's input.
-3. Executes the API call to Groq.
-4. Appends the interaction to the local memory buffer.
-5. Returns the generated string.
+## 4. Dashboard (`src/chat_bot/api/dashboard.py`)
+A Streamlit-based diagnostic tool for internal testing and data verification.
+Run via: `streamlit run src/chat_bot/api/dashboard.py`

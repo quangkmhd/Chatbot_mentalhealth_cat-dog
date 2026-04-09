@@ -1,9 +1,9 @@
 # PawsitiveMind - Mental Health Chatbot
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg?style=flat-square)
-![LanceDB](https://img.shields.io/badge/vector_db-LanceDB-purple.svg?style=flat-square)
-![Groq](https://img.shields.io/badge/LLM-Groq-orange.svg?style=flat-square)
-![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![LanceDB](https://img.shields.io/badge/LanceDB-Vector_DB-orange?style=flat-square)
+![Groq](https://img.shields.io/badge/Groq-Powered-F55036?style=flat-square)
+![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-yellow.svg?style=flat-square)
 
 Provide empathetic, 24/7 mental health support using an intelligent Retrieval-Augmented Generation (RAG) chatbot. Designed for wellness platforms, counseling centers, and health tech developers, PawsitiveMind leverages LanceDB and the lightning-fast Groq API to deliver sub-second, contextually accurate responses grounded in a vast library of therapeutic dialogues.
 
@@ -11,12 +11,12 @@ Provide empathetic, 24/7 mental health support using an intelligent Retrieval-Au
 
 ## ✨ Key Features
 
-- **Extract and embed thousands of therapeutic dialogues** efficiently using sentence-transformers and LanceDB's serverless vector store.
-- **Respond with ultra-low latency** utilizing the Groq API for rapid token generation.
-- **Maintain context across long conversations** with advanced LangChain text splitters and memory management.
-- **Provide a comforting user experience** via a lightweight, accessible Flask web UI.
-- **Scrape and update knowledge bases automatically** with robust, built-in crawler scripts (`2-crawler.py`).
-- **Support multiple LLM providers seamlessly**, with drop-in integrations for OpenAI and open-source local models.
+- **Efficient Data Ingestion**: Extract and embed therapeutic dialogues using `src.scripts.ingest_data` into LanceDB's serverless vector store.
+- **Ultra-low Latency**: Integrated with Groq API for lightning-fast response generation using Llama-3.3-70b.
+- **Modular Design**: Separated concerns into `core`, `models`, `services`, and `api` modules for maximum maintainability.
+- **Multiple Interfaces**: Choose between a Flask-based web UI and a Streamlit-based dashboard.
+- **Scalable Retrieval**: Advanced RAG pipeline with customizable chunking and overlap in the `models/vector_db.py`.
+- **Flexible LLM Support**: Drop-in support for Groq and OpenRouter (DeepSeek) via `core/chat_logic.py`.
 
 ## 🚀 Quick Start
 
@@ -30,27 +30,24 @@ cd Chatbot_mentalhealth_cat-dog
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Configure environment variables
-echo "GROQ_API_KEY=your_api_key_here" > .env
-echo "OPENAI_API_KEY=your_openai_key_here" >> .env
+# 3. Configure environment variables (.env)
+GROQ_API_KEY=your_key_here
+OPENROUTER_API_KEY=your_key_here
+SECRET_KEY=your_flask_secret
 
 # 4. Start the Flask chat interface
-python app.py
+python main.py
 ```
 
 **Expected Output:**
 ```text
- * Serving Flask app 'app'
+ * Serving Flask app 'src.chat_bot.api.app'
  * Debug mode: on
  * Running on http://127.0.0.1:5000
 ```
-Open your browser to `http://127.0.0.1:5000` to start chatting with the mental health assistant immediately.
+Open your browser to `http://127.0.0.1:5000` to start chatting with the mental health assistant.
 
 ## 📦 Installation
-
-Choose the method that best aligns with your deployment strategy.
-
-### Method 1: Standard Python Setup
 
 Ideal for local testing and modification.
 
@@ -60,70 +57,46 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Method 2: Docker Compose (Production Ready)
-
-If you plan to scale the application or run it alongside other services.
-
-```bash
-# docker-compose.yml (create one based on app.py)
-docker-compose build
-docker-compose up -d
-```
-
 ## 💻 Usage Examples
 
-### Example 1: Scraping and Extracting Data
+### Example 1: Scraping and Ingesting Data
 
-**Problem:** You need to build a specialized knowledge base from curated mental health resources before the bot can answer questions.
+**Problem:** You need to build a specialized knowledge base from curated mental health resources.
 
 ```bash
-# Run the crawler script to fetch articles
-python 2-crawler.py --source "https://mentalhealth-example.org/articles"
+# Fetch links from source
+python -m src.scripts.crawl_links
 
-# Extract the text and clean it
-python 1-extraction.py
+# Run the full ingestion pipeline (crawl articles -> chunk -> embed -> store)
+python -m src.scripts.ingest_data --crawl
 ```
-**Expected Output:** A `plain_links.json` or structured dataset folder populated with clean, usable text documents ready for embedding.
-*Concept: The data ingestion pipeline is separated into discrete scripts, ensuring you can rebuild the knowledge base automatically whenever new therapeutic guidelines are released.*
+**Expected Output:** A structured LanceDB dataset in `data/vector_db` populated with clean, usable text documents ready for semantic search.
 
-### Example 2: Generating the Vector Database
+### Example 2: Generating the Vector Database (Code Level)
 
-**Problem:** The raw text needs to be converted into mathematical vectors so the AI can perform semantic search.
+**Problem:** You want to programmatically interact with the vector store.
 
 ```python
-# 3-embedding.py
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer
-import lancedb
+from src.chat_bot.models.vector_db import VectorDBManager
 
-# Initialize LanceDB
-db = lancedb.connect("./data/lancedb")
-table = db.create_table("therapy_docs", schema=[("vector", "vector(384)"), ("text", "string")])
+# Initialize Manager
+db_manager = VectorDBManager()
 
-# Embed and insert
-model = SentenceTransformer('all-MiniLM-L6-v2')
-texts = ["Cognitive behavioral therapy focuses on...", "Mindfulness helps reduce anxiety..."]
-vectors = model.encode(texts)
-
-data = [{"vector": v.tolist(), "text": t} for v, t in zip(vectors, texts)]
-table.add(data)
+# Search for relevant context
+context = db_manager.search("How to deal with work stress?")
+print(context)
 ```
-*Concept: LanceDB stores the embeddings locally without requiring a heavy server, allowing the chatbot to look up relevant context in milliseconds.*
+*Concept: `VectorDBManager` abstracts away the complexity of embedding generation and LanceDB queries.*
 
-### Example 3: Running a CLI Chat Session
+### Example 3: Running the Streamlit Dashboard
 
-**Problem:** You want to test the RAG logic and prompt engineering without launching the full web interface.
+**Problem:** You want an interactive, data-rich interface for testing and monitoring.
 
 ```bash
-# Run the pure chat logic script
-python 4-chat.py
+# Start the Streamlit dashboard
+streamlit run src/chat_bot/api/dashboard.py
 ```
-
-```text
-User: I've been feeling extremely overwhelmed with work lately and can't sleep.
-Bot: I hear you. It sounds like work-related stress is significantly impacting your well-being and sleep. Based on therapeutic guidelines, establishing a strict "wind-down" routine an hour before bed can help signal to your brain that it's time to rest. Would you like to explore some specific relaxation techniques together?
-```
-*Concept: `4-chat.py` orchestrates the LanceDB retrieval, injects the context into the Groq LLM prompt, and returns the generated empathetic response.*
+*Concept: The dashboard provides a visual way to see retrieved context and model thought processes in real-time.*
 
 ## 🔧 Troubleshooting
 

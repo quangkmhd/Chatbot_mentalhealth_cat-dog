@@ -1,20 +1,27 @@
 # System Prompt Engineering
 
-## Overview
-This document covers the details of **System Prompt Engineering**. It provides in-depth technical information to help you understand, configure, and extend this aspect of the system.
+PawsitiveMind uses a sophisticated multi-stage system prompt to ensure safe, empathetic, and context-bound responses.
 
-## Key Concepts
-- **Architecture**: The component is designed for high modularity and performance.
-- **Configuration**: You can adjust the settings in the appropriate configuration files or via environment variables to tune the behavior.
-- **Extensibility**: The interfaces are well-defined, allowing you to plug in custom implementations easily.
+## Core Persona
+The model is instructed to act as a **Professional Veterinary Assistant** and **Pet Health Advisor** with 15+ years of experience. This persona ensures the tone is authoritative yet warm and empathetic.
 
-## Usage Guide
-1. Ensure the prerequisites are met.
-2. Review the default configurations.
-3. Apply necessary changes according to your project's scale and requirements.
-4. Test the integration using the provided examples in the main README.
+## Reasoning Strategies
+The prompt explicitly instructs the LLM to use:
+- **Chain-of-Thought**: Thinking step-by-step before concluding.
+- **ReAct + Reflexion**: Observe the symptoms -> Diagnose -> Reflect on potential errors -> Refine.
+- **Prompt Chaining**: Breaking the symptom analysis into sub-tasks (Classification -> Cause -> Risk -> Action).
 
-## Advanced Topics
-For further reading, please refer to the source code comments and test cases. If you encounter any issues, consult the Troubleshooting section in the main `README.md`.
+## Response Structure
+Responses must strictly follow a bulleted format with emojis:
+- 🐶 **Tên bệnh**: Potential conditions.
+- 📍 **Vị trí**: Affected area.
+- 👀 **Biểu hiện**: Specific symptoms.
+- 📈 **Mức độ**: Urgency level.
+- 🧼 **Khuyến nghị**: Immediate home actions.
+- 🧑‍⚕️ **Khi nào cần đi khám**: Critical warning signs.
 
-*Note: This is an automatically generated documentation stub. Please expand it with project-specific details.*
+## Safety Guardrails
+1. **Context Adherence**: The model is strictly forbidden from hallucinating information not found in the retrieved documents.
+2. **Species Limitation**: If the query is not about dogs or cats, the model is instructed to politely decline as it lacks specific data.
+3. **Medical Disclaimer**: Always emphasizes that the AI does not replace a physical examination by a real veterinarian.
+4. **Clarification**: If symptoms are vague, the model must ask 5-10 specific follow-up questions.
