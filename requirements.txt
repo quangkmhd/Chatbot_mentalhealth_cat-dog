@@ -1,27 +1,25 @@
-# Web Framework and Interface
+# Core Web and API
 flask
-livereload
+streamlit
+requests
+beautifulsoup4
 
-# Vector Database and Data Processing
+# Database and Vectors
 lancedb
 pandas
 numpy
 
-# Language Models and Embeddings
+# ML and Models
 transformers
-sentence_transformers
 torch
-langchain_text_splitters
+sentence_transformers
 
-# API Clients for LLMs
+# LLM Providers
 groq
-openai
 
-# Text Processing and Web Scraping
-tqdm
-requests
-beautifulsoup4
-
-# Environment Variables and Utilities
+# Utilities
+loguru
+pydantic-settings
 python-dotenv
-secrets
+tqdm
+python-multipart
